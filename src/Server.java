@@ -3,6 +3,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.net.*;
+import java.util.StringTokenizer;
 
 /**
  * Created by Gye Hyeon Park on 2016-03-26.
@@ -92,30 +93,33 @@ class ConnectionThread extends Thread
     {
         try
         {
-            Socket socket = server.accept();
-            reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             while(true)
             {
+                Socket socket = server.accept();
+                reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+//            while(true)
+//            {
                 String msg = reader.readLine();
+                StringTokenizer strtok = new StringTokenizer(msg, " \0");
+                msg = strtok.nextToken();
                 System.out.println(msg);
                 Robot robot = new Robot();
                 if(msg == null)
-                {
-                    System.out.println("null");
                     break;
-                }
                 switch(msg)
                 {
                     case "F5":
                         robot.keyPress(KeyEvent.VK_F5);
                         break;
-                    case "Enter":
+                    case "ENTER":
                         robot.keyPress(KeyEvent.VK_ENTER);
                         break;
-                    case "BackSpace":
+                    case "BACK_SPACE":
                         robot.keyPress(KeyEvent.VK_BACK_SPACE);
                         break;
                 }
+                reader.close();
+                socket.close();
             }
             reader.close();
         }
