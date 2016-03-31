@@ -1,9 +1,9 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.KeyEvent;
 import java.io.*;
 import java.net.*;
-import java.util.StringTokenizer;
+import java.util.*;
 
 /**
  * Created by Gye Hyeon Park on 2016-03-26.
@@ -11,7 +11,6 @@ import java.util.StringTokenizer;
 
 public class Server
 {
-    private static ConnectionThread thread;
     public static void main(String[] args)
     {
         JFrame frame = new JFrame("pH Server");
@@ -32,12 +31,10 @@ public class Server
         ipLabel.setHorizontalAlignment(SwingConstants.CENTER);
         panel.add(ipLabel);
 
-        JTextField ipText = null;
-        try{ipText = new JTextField(InetAddress.getLocalHost().getHostAddress()); }
-        catch(UnknownHostException ignored){}
-        ipText.setFont(font);
-        ipText.setHorizontalAlignment(SwingConstants.CENTER);
-        panel.add(ipText);
+        JLabel ipAddress = new JLabel(getLocalIp());
+        ipAddress.setFont(font);
+        ipAddress.setHorizontalAlignment(SwingConstants.CENTER);
+        panel.add(ipAddress);
 
         JLabel portLabel = new JLabel("Port");
         portLabel.setBackground(Color.RED);
@@ -46,59 +43,63 @@ public class Server
         portLabel.setHorizontalAlignment(SwingConstants.CENTER);
         panel.add(portLabel);
 
-        JTextField portText = new JTextField("7777");
-        portText.setFont(font);
-        portText.setHorizontalAlignment(SwingConstants.CENTER);
-        panel.add(portText);
+        JLabel portNum = new JLabel("7777");
+        portNum.setFont(font);
+        portNum.setHorizontalAlignment(SwingConstants.CENTER);
+        panel.add(portNum);
 
         frame.add(panel);
-        JButton button = new JButton("Connect");
-        button.setFont(font);
-        button.addActionListener(new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                if(button.getText().equals("Connect"))
-                {
-                    thread = new ConnectionThread(Integer.parseInt(portText.getText()));
-                    thread.start();
-                    button.setText("Disconnect");
-                }
-                else
-                {
-                    thread.kill();
-                    button.setText("Connect");
-                }
-            }
-        });
-        frame.add(button, BorderLayout.SOUTH);
+
+        JLabel isConnected = new JLabel("Ready");
+        isConnected.setFont(font);
+        isConnected.setForeground(Color.WHITE);
+        isConnected.setBackground(Color.DARK_GRAY);
+        isConnected.setOpaque(true);
+        isConnected.setHorizontalAlignment(SwingConstants.CENTER);
+        frame.add(isConnected, BorderLayout.SOUTH);
 
         frame.setVisible(true);
+
+        new Connection(Integer.parseInt(portNum.getText()), isConnected);
+    }
+
+    // 현재 시스템의 모든 네트워크 인터페이스를 읽어와서 loopback장치인지 랜선에 연결된 장치인지 여부를 확인하여 실제 사용중인 인터페이스의 IP 주소 반환
+    public static String getLocalIp()
+    {
+        try
+        {
+            Enumeration<NetworkInterface> networks = NetworkInterface.getNetworkInterfaces();
+            while(networks.hasMoreElements())
+            {
+                NetworkInterface network = networks.nextElement();
+                Enumeration<InetAddress> inetAddresses = network.getInetAddresses();
+                while(inetAddresses.hasMoreElements())
+                {
+                    InetAddress inetAddress = inetAddresses.nextElement();
+                    if (!inetAddress.isLoopbackAddress() && !inetAddress.isLinkLocalAddress() && inetAddress.isSiteLocalAddress())
+                        return inetAddress.getHostAddress().toString();
+                }
+            }
+        }
+        catch(SocketException ignored){}
+        return null;
     }
 }
 
-class ConnectionThread extends Thread
+class Connection
 {
     private ServerSocket server;
     private BufferedReader reader;
 
-    public ConnectionThread(int portNum)
-    {
-        try{server = new ServerSocket(portNum);}
-        catch(IOException ignored){}
-    }
-
-    @Override
-    public void run()
+    public Connection(int portNum, JLabel isConnected)
     {
         try
         {
+            server = new ServerSocket(portNum);
             while(true)
             {
                 Socket socket = server.accept();
                 reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-//            while(true)
-//            {
                 String msg = reader.readLine();
                 StringTokenizer strtok = new StringTokenizer(msg, " \0");
                 msg = strtok.nextToken();
@@ -108,6 +109,9 @@ class ConnectionThread extends Thread
                     break;
                 switch(msg)
                 {
+                    case "START":
+                        isConnected.setText("Connected");
+                        break;
                     case "F5":
                         robot.keyPress(KeyEvent.VK_F5);
                         break;
@@ -116,6 +120,9 @@ class ConnectionThread extends Thread
                         break;
                     case "BACK_SPACE":
                         robot.keyPress(KeyEvent.VK_BACK_SPACE);
+                        break;
+                    case "ESC":
+                        robot.keyPress(KeyEvent.VK_ESCAPE);
                         break;
                 }
                 reader.close();
@@ -129,16 +136,5 @@ class ConnectionThread extends Thread
             try{server.close();}
             catch(Exception ignored){}
         }
-    }
-
-    public void kill()
-    {
-        try
-        {
-            reader = null;
-//            reader.close();
-            server.close();
-        }
-        catch(Exception ignored){}
     }
 }
