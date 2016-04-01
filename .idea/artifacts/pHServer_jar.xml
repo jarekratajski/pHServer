@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="pHServer:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/pHServer_jar</output-path>
+    <root id="archive" name="pHServer.jar">
+      <element id="module-output" name="pHServer" />
+    </root>
+  </artifact>
+</component>

@@ -13,46 +13,60 @@ public class Server
 {
     public static void main(String[] args)
     {
-        JFrame frame = new JFrame("pH Server");
+        JFrame frame = new JFrame("PHP");
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        frame.setSize(screenSize.width/4, screenSize.height/4);
+        frame.setSize(screenSize.width/6, screenSize.height/5);
         frame.setResizable(false);
         Dimension frameSize = frame.getSize();
-        frame.setLocation((screenSize.width - frameSize.width)/2, (screenSize.height - frameSize.height)/2);
+        frame.setLocation((screenSize.width - frameSize.width), (screenSize.height - frameSize.height));
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        JPanel panel = new JPanel();
-        panel.setLayout(new GridLayout(2, 2));
         Font font = new Font("Sans Serif", Font.ITALIC, 40);
 
-        JLabel ipLabel = new JLabel("IP");
+        JPanel labelPanel = new JPanel();
+        labelPanel.setLayout(new GridLayout(2, 1, 0, 2));
+        labelPanel.setBackground(Color.WHITE);
+        labelPanel.setOpaque(true);
+
+        JLabel ipLabel = new JLabel(" IP ");
+        ipLabel.setForeground(Color.WHITE);
         ipLabel.setBackground(Color.CYAN);
         ipLabel.setOpaque(true);
         ipLabel.setFont(font);
         ipLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        panel.add(ipLabel);
+        labelPanel.add(ipLabel);
 
-        JLabel ipAddress = new JLabel(getLocalIp());
-        ipAddress.setFont(font);
-        ipAddress.setHorizontalAlignment(SwingConstants.CENTER);
-        panel.add(ipAddress);
-
-        JLabel portLabel = new JLabel("Port");
+        JLabel portLabel = new JLabel(" Port ");
+        portLabel.setForeground(Color.WHITE);
         portLabel.setBackground(Color.RED);
         portLabel.setOpaque(true);
         portLabel.setFont(font);
         portLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        panel.add(portLabel);
+        labelPanel.add(portLabel);
+
+        frame.add(labelPanel, BorderLayout.WEST);
+
+        JPanel textPanel = new JPanel();
+        textPanel.setLayout(new GridLayout(2, 1, 0, 2));
+        textPanel.setBackground(Color.WHITE);
+        textPanel.setOpaque(true);
+
+        JLabel ipAddress = new JLabel(getLocalIp());
+        ipAddress.setOpaque(true);
+        ipAddress.setFont(font);
+        ipAddress.setHorizontalAlignment(SwingConstants.CENTER);
+        textPanel.add(ipAddress);
 
         JLabel portNum = new JLabel("7777");
+        portNum.setOpaque(true);
         portNum.setFont(font);
         portNum.setHorizontalAlignment(SwingConstants.CENTER);
-        panel.add(portNum);
+        textPanel.add(portNum);
 
-        frame.add(panel);
+        frame.add(textPanel);
 
         JLabel isConnected = new JLabel("Ready");
         isConnected.setFont(font);
-        isConnected.setForeground(Color.WHITE);
+        isConnected.setForeground(Color.YELLOW);
         isConnected.setBackground(Color.DARK_GRAY);
         isConnected.setOpaque(true);
         isConnected.setHorizontalAlignment(SwingConstants.CENTER);
@@ -111,6 +125,7 @@ class Connection
                 {
                     case "START":
                         isConnected.setText("Connected");
+                        isConnected.setForeground(Color.GREEN);
                         break;
                     case "F5":
                         robot.keyPress(KeyEvent.VK_F5);

@@ -7,11 +7,10 @@
 <JVMSearchPath>exepath</JVMSearchPath>
 <JVMSearchPath>jview</JVMSearchPath>
 <arguments></arguments>
-<currentDirectory>${EXECUTABLEPATH}</currentDirectory>
 <embeddedJar>true</embeddedJar>
-<executableName>pHServer.exe</executableName>
+<executableName>PHP.exe</executableName>
 <initialMemoryHeap>-1</initialMemoryHeap>
-<jarLocation>..\..\artifacts\pHServer_jar\pHServer.jar</jarLocation>
+<jarLocation>pHServer.jar</jarLocation>
 <mainClassName>Server</mainClassName>
 <maximumMemoryHeap>-1</maximumMemoryHeap>
 <maximumVersion></maximumVersion>
