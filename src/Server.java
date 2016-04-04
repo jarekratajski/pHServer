@@ -15,12 +15,12 @@ public class Server
     {
         JFrame frame = new JFrame("PHP");
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        frame.setSize(screenSize.width/6, screenSize.height/5);
+        frame.setSize(screenSize.width/3, screenSize.height/4);
         frame.setResizable(false);
         Dimension frameSize = frame.getSize();
         frame.setLocation((screenSize.width - frameSize.width), (screenSize.height - frameSize.height));
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        Font font = new Font("Sans Serif", Font.ITALIC, 40);
+        Font font = new Font("Sans Serif", Font.ITALIC, 30);
 
         JPanel labelPanel = new JPanel();
         labelPanel.setLayout(new GridLayout(2, 1, 0, 2));
@@ -82,6 +82,7 @@ public class Server
     {
         try
         {
+            // 유동 IP
             Enumeration<NetworkInterface> networks = NetworkInterface.getNetworkInterfaces();
             while(networks.hasMoreElements())
             {
@@ -91,7 +92,20 @@ public class Server
                 {
                     InetAddress inetAddress = inetAddresses.nextElement();
                     if (!inetAddress.isLoopbackAddress() && !inetAddress.isLinkLocalAddress() && inetAddress.isSiteLocalAddress())
-                        return inetAddress.getHostAddress().toString();
+                        return inetAddress.getHostAddress();
+                }
+            }
+            // 고정 IP
+            networks = NetworkInterface.getNetworkInterfaces();
+            while(networks.hasMoreElements())
+            {
+                NetworkInterface network = networks.nextElement();
+                Enumeration<InetAddress> inetAddresses = network.getInetAddresses();
+                while(inetAddresses.hasMoreElements())
+                {
+                    InetAddress inetAddress = inetAddresses.nextElement();
+                    if (!inetAddress.isLoopbackAddress() && !inetAddress.isLinkLocalAddress() && !inetAddress.isSiteLocalAddress())
+                        return inetAddress.getHostAddress();
                 }
             }
         }
