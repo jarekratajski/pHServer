@@ -1,5 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.*;
 import java.net.*;
@@ -63,6 +65,42 @@ public class Server
         textPanel.add(portNum);
 
         frame.add(textPanel);
+
+        JButton send = new JButton("Send");
+        send.setOpaque(true);
+        send.setFont(font);
+        send.setHorizontalAlignment(SwingConstants.CENTER);
+        frame.add(send, BorderLayout.EAST);
+
+        String str = getLocalIp();
+        StringTokenizer strtok = new StringTokenizer(str, ".");
+        str = strtok.nextToken();
+        str += ".";
+        str += strtok.nextToken();
+        str += ".";
+        str += 255;
+        str += ".";
+        str += 255;
+        BufferedReader in = null;
+        try
+        {
+            in = new BufferedReader(new InputStreamReader(System.in));
+            InetAddress ia = InetAddress.getByName(str);
+            send.addActionListener(new ActionListener(){
+                @Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    try{new DatagramSocket().send(new DatagramPacket(getLocalIp().getBytes(), getLocalIp().getBytes().length, ia, 7777));}
+                    catch(IOException ignored){}
+                }
+            });
+        }
+        catch(Exception ignored){}
+        finally
+        {
+            try{in.close();}
+            catch(IOException ignored){}
+        }
 
         JLabel isConnected = new JLabel("Ready");
         isConnected.setFont(font);
