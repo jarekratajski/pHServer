@@ -72,35 +72,18 @@ public class Server
         send.setHorizontalAlignment(SwingConstants.CENTER);
         frame.add(send, BorderLayout.EAST);
 
-        String str = getLocalIp();
-        StringTokenizer strtok = new StringTokenizer(str, ".");
-        str = strtok.nextToken();
-        str += ".";
-        str += strtok.nextToken();
-        str += ".";
-        str += 255;
-        str += ".";
-        str += 255;
-        BufferedReader in = null;
         try
         {
-            in = new BufferedReader(new InputStreamReader(System.in));
-            InetAddress ia = InetAddress.getByName(str);
             send.addActionListener(new ActionListener(){
                 @Override
                 public void actionPerformed(ActionEvent e)
                 {
-                    try{new DatagramSocket().send(new DatagramPacket(getLocalIp().getBytes(), getLocalIp().getBytes().length, ia, 7777));}
+                    try{new DatagramSocket().send(new DatagramPacket(getLocalIp().getBytes(), getLocalIp().getBytes().length, InetAddress.getByName("255.255.255.255"), 7777));}
                     catch(IOException ignored){}
                 }
             });
         }
         catch(Exception ignored){}
-        finally
-        {
-            try{in.close();}
-            catch(IOException ignored){}
-        }
 
         JLabel isConnected = new JLabel("Ready");
         isConnected.setFont(font);
