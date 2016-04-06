@@ -98,12 +98,12 @@ public class Server
         new Connection(Integer.parseInt(portNum.getText()), isConnected);
     }
 
-    // 현재 시스템의 모든 네트워크 인터페이스를 읽어와서 loopback장치인지 랜선에 연결된 장치인지 여부를 확인하여 실제 사용중인 인터페이스의 IP 주소 반환
+    // 현재 시스템의 모든 네트워크 인터페이스를 읽어와서 loopback장치인지 유무선 여부를 확인하여 실제 사용중인 인터페이스의 IP 주소 반환
     public static String getLocalIp()
     {
         try
         {
-            // 유동 IP
+            // 유선
             Enumeration<NetworkInterface> networks = NetworkInterface.getNetworkInterfaces();
             while(networks.hasMoreElements())
             {
@@ -112,11 +112,11 @@ public class Server
                 while(inetAddresses.hasMoreElements())
                 {
                     InetAddress inetAddress = inetAddresses.nextElement();
-                    if (!inetAddress.isLoopbackAddress() && !inetAddress.isLinkLocalAddress() && inetAddress.isSiteLocalAddress())
+                    if (!inetAddress.isLoopbackAddress() && !inetAddress.isLinkLocalAddress() && !inetAddress.getHostAddress().contains(":") && !inetAddress.isSiteLocalAddress())
                         return inetAddress.getHostAddress();
                 }
             }
-            // 고정 IP
+            // 무선
             networks = NetworkInterface.getNetworkInterfaces();
             while(networks.hasMoreElements())
             {
@@ -125,7 +125,7 @@ public class Server
                 while(inetAddresses.hasMoreElements())
                 {
                     InetAddress inetAddress = inetAddresses.nextElement();
-                    if (!inetAddress.isLoopbackAddress() && !inetAddress.isLinkLocalAddress() && !inetAddress.isSiteLocalAddress())
+                    if (!inetAddress.isLoopbackAddress() && !inetAddress.isLinkLocalAddress() && !inetAddress.getHostAddress().contains(":") && inetAddress.isSiteLocalAddress())
                         return inetAddress.getHostAddress();
                 }
             }
