@@ -15,7 +15,7 @@ public class Server
     {
         JFrame frame = new JFrame("PHP");
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        frame.setSize(screenSize.width/3, screenSize.height/4);
+        frame.setSize(screenSize.width/3, screenSize.height/3);
         frame.setResizable(false);
         Dimension frameSize = frame.getSize();
         frame.setLocation((screenSize.width - frameSize.width), (screenSize.height - frameSize.height));
