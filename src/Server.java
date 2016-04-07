@@ -1,8 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
+import java.awt.event.*;
 import java.io.*;
 import java.net.*;
 import java.util.*;
@@ -66,24 +64,10 @@ public class Server
 
         frame.add(textPanel);
 
-        JButton send = new JButton("Send");
-        send.setOpaque(true);
-        send.setFont(font);
-        send.setHorizontalAlignment(SwingConstants.CENTER);
-        frame.add(send, BorderLayout.EAST);
-
-        try
-        {
-            send.addActionListener(new ActionListener(){
-                @Override
-                public void actionPerformed(ActionEvent e)
-                {
-                    try{new DatagramSocket().send(new DatagramPacket(getLocalIp().getBytes(), getLocalIp().getBytes().length, InetAddress.getByName("255.255.255.255"), 7777));}
-                    catch(IOException ignored){}
-                }
-            });
-        }
-        catch(Exception ignored){}
+        JPanel bottomPanel = new JPanel();
+        bottomPanel.setLayout(new GridLayout(2, 1, 0, 2));
+        bottomPanel.setBackground(Color.WHITE);
+        bottomPanel.setOpaque(true);
 
         JLabel isConnected = new JLabel("Ready");
         isConnected.setFont(font);
@@ -91,7 +75,38 @@ public class Server
         isConnected.setBackground(Color.DARK_GRAY);
         isConnected.setOpaque(true);
         isConnected.setHorizontalAlignment(SwingConstants.CENTER);
-        frame.add(isConnected, BorderLayout.SOUTH);
+        bottomPanel.add(isConnected);
+
+        JButton send = new JButton("IP Broadcasting");
+        send.setOpaque(true);
+        send.setFont(font);
+        send.setHorizontalAlignment(SwingConstants.CENTER);
+        bottomPanel.add(send);
+        try
+        {
+            send.addActionListener(new ActionListener(){
+                @Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    try
+                    {
+                        String ip = getLocalIp();
+                        StringTokenizer strtok = new StringTokenizer(ip, ".");
+                        new DatagramSocket().send(new DatagramPacket(ip.getBytes(), ip.getBytes().length, InetAddress.getByName("255.255.255.255"), 7777));
+                        String gateway = strtok.nextToken();
+                        new DatagramSocket().send(new DatagramPacket(ip.getBytes(), ip.getBytes().length, InetAddress.getByName(gateway + ".255.255.255"), 7777));
+                        gateway += "." + strtok.nextToken();
+                        new DatagramSocket().send(new DatagramPacket(ip.getBytes(), ip.getBytes().length, InetAddress.getByName(gateway + ".255.255"), 7777));
+                        gateway += "." + strtok.nextToken();
+                        new DatagramSocket().send(new DatagramPacket(ip.getBytes(), ip.getBytes().length, InetAddress.getByName(gateway + ".255"), 7777));
+                    }
+                    catch(IOException ignored){}
+                }
+            });
+        }
+        catch(Exception ignored){}
+
+        frame.add(bottomPanel, BorderLayout.SOUTH);
 
         frame.setVisible(true);
 
@@ -132,59 +147,5 @@ public class Server
         }
         catch(SocketException ignored){}
         return null;
-    }
-}
-
-class Connection
-{
-    private ServerSocket server;
-    private BufferedReader reader;
-
-    public Connection(int portNum, JLabel isConnected)
-    {
-        try
-        {
-            server = new ServerSocket(portNum);
-            while(true)
-            {
-                Socket socket = server.accept();
-                reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                String msg = reader.readLine();
-                StringTokenizer strtok = new StringTokenizer(msg, " \0");
-                msg = strtok.nextToken();
-                System.out.println(msg);
-                Robot robot = new Robot();
-                if(msg == null)
-                    break;
-                switch(msg)
-                {
-                    case "START":
-                        isConnected.setText("Connected");
-                        isConnected.setForeground(Color.GREEN);
-                        break;
-                    case "F5":
-                        robot.keyPress(KeyEvent.VK_F5);
-                        break;
-                    case "ENTER":
-                        robot.keyPress(KeyEvent.VK_ENTER);
-                        break;
-                    case "BACK_SPACE":
-                        robot.keyPress(KeyEvent.VK_BACK_SPACE);
-                        break;
-                    case "ESC":
-                        robot.keyPress(KeyEvent.VK_ESCAPE);
-                        break;
-                }
-                reader.close();
-                socket.close();
-            }
-            reader.close();
-        }
-        catch(Exception ignored){}
-        finally
-        {
-            try{server.close();}
-            catch(Exception ignored){}
-        }
     }
 }
