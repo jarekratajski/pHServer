@@ -1,3 +1,6 @@
+import com.sun.jna.Native;
+import com.sun.jna.PointerType;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -26,32 +29,42 @@ public class Connection
                 StringTokenizer strtok = new StringTokenizer(msg, " \0");
                 msg = strtok.nextToken();
                 System.out.println(msg);
-                Robot robot = new Robot();
-                if(msg == null)
-                    break;
-                switch(msg)
+                if(msg.equals("START"))
                 {
-                    case "START":
-                        isConnected.setText("Connected");
-                        isConnected.setForeground(Color.GREEN);
-                        break;
-                    case "F5":
-                        robot.keyPress(KeyEvent.VK_F5);
-                        break;
-                    case "ENTER":
-                        robot.keyPress(KeyEvent.VK_ENTER);
-                        break;
-                    case "BACK_SPACE":
-                        robot.keyPress(KeyEvent.VK_BACK_SPACE);
-                        break;
-                    case "ESC":
-                        robot.keyPress(KeyEvent.VK_ESCAPE);
-                        break;
+                    isConnected.setText("Connected");
+                    isConnected.setForeground(Color.GREEN);
+                }
+
+                byte[] windowText = new byte[512];
+                PointerType hwnd = User32.INSTANCE.GetForegroundWindow();
+                User32.INSTANCE.GetWindowTextA(hwnd, windowText, 512);
+                // ppt focus되어 있는 경우만 동작
+                if(Native.toString(windowText).contains("PowerPoint"))
+                {
+                    Robot robot = new Robot();
+                    switch(msg)
+                    {
+                        case "START":
+                            isConnected.setText("Connected");
+                            isConnected.setForeground(Color.GREEN);
+                            break;
+                        case "F5":
+                            robot.keyPress(KeyEvent.VK_F5);
+                            break;
+                        case "ENTER":
+                            robot.keyPress(KeyEvent.VK_ENTER);
+                            break;
+                        case "BACK_SPACE":
+                            robot.keyPress(KeyEvent.VK_BACK_SPACE);
+                            break;
+                        case "ESC":
+                            robot.keyPress(KeyEvent.VK_ESCAPE);
+                            break;
+                    }
                 }
                 reader.close();
                 socket.close();
             }
-            reader.close();
         }
         catch(Exception ignored){}
         finally
