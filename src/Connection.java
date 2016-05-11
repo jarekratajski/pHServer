@@ -4,13 +4,15 @@ import com.sun.jna.PointerType;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.io.*;
-import java.net.*;
-import java.util.StringTokenizer;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.ServerSocket;
+import java.net.Socket;
 
 /**
  * Created by Gye Hyeon Park on 2016-04-07.
  */
+
 public class Connection
 {
     private ServerSocket server;
@@ -26,8 +28,6 @@ public class Connection
                 Socket socket = server.accept();
                 reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 String msg = reader.readLine();
-                StringTokenizer strtok = new StringTokenizer(msg, " \0");
-                msg = strtok.nextToken();
                 System.out.println(msg);
                 if(msg.equals("START"))
                 {
@@ -44,18 +44,14 @@ public class Connection
                     Robot robot = new Robot();
                     switch(msg)
                     {
-                        case "START":
-                            isConnected.setText("Connected");
-                            isConnected.setForeground(Color.GREEN);
-                            break;
                         case "F5":
                             robot.keyPress(KeyEvent.VK_F5);
                             break;
-                        case "ENTER":
-                            robot.keyPress(KeyEvent.VK_ENTER);
+                        case "GO":
+                            robot.keyPress(KeyEvent.VK_RIGHT);
                             break;
-                        case "BACK_SPACE":
-                            robot.keyPress(KeyEvent.VK_BACK_SPACE);
+                        case "BACK":
+                            robot.keyPress(KeyEvent.VK_LEFT);
                             break;
                         case "ESC":
                             robot.keyPress(KeyEvent.VK_ESCAPE);

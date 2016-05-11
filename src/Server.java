@@ -13,7 +13,7 @@ public class Server
 {
     public static void main(String[] args)
     {
-        JFrame frame = new JFrame("PHP");
+        JFrame frame = new JFrame("pH");
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         frame.setSize(screenSize.width/3, screenSize.height/3);
         frame.setResizable(false);
@@ -65,7 +65,7 @@ public class Server
         frame.add(textPanel);
 
         JPanel bottomPanel = new JPanel();
-        bottomPanel.setLayout(new GridLayout(2, 1, 0, 2));
+        bottomPanel.setLayout(new GridLayout(3, 1, 0, 2));
         bottomPanel.setBackground(Color.WHITE);
         bottomPanel.setOpaque(true);
 
@@ -106,6 +106,13 @@ public class Server
         }
         catch(Exception ignored){}
 
+        JLabel description = new JLabel("Microsoft PowerPoint에서만 동작합니다.");
+        description.setFont(new Font("Sans Serif", Font.BOLD, 20));
+        description.setForeground(Color.RED);
+        description.setOpaque(true);
+        description.setHorizontalAlignment(SwingConstants.CENTER);
+        bottomPanel.add(description);
+
         frame.add(bottomPanel, BorderLayout.SOUTH);
 
         frame.setVisible(true);
@@ -113,7 +120,7 @@ public class Server
         new Connection(Integer.parseInt(portNum.getText()), isConnected);
     }
 
-    // 현재 시스템의 모든 네트워크 인터페이스를 읽어와서 loopback장치인지 유무선 여부를 확인하여 실제 사용중인 인터페이스의 IP 주소 반환
+    // 현재 시스템의 모든 네트워크 인터페이스x를 읽어와서 loopback장치인지 유무선 여부를 확인하여 실제 사용중인 인터페이스의 IP 주소 반환
     public static String getLocalIp()
     {
         try
